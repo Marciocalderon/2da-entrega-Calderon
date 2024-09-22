@@ -56,7 +56,7 @@ function listarTurnos() {
     listaTurnosDiv.innerHTML = "<h3>Turnos Médicos:</h3>";
     
     if (turnos.length === 0) {
-        listaTurnosDiv.innerHTML += "No hay turnos disponibles.";
+        listaTurnosDiv.innerHTML += "No hay turnos agendados.";
     } else {
         turnos.forEach(turno => {
             listaTurnosDiv.innerHTML += `
