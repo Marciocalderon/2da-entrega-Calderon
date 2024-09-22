@@ -8,7 +8,7 @@ function crearHTML() {
         <input type="text" id="nombre"><br><br>
         <label>Especialidad Médica:</label><br>
         <select id="especialidad">
-            <option value="">--Seleccionar--</option>
+            <option value="">--Selecciona una especialidad--</option>
             <option value="Cardiología">Cardiología</option>
             <option value="Pediatría">Pediatría</option>
             <option value="Dermatología">Dermatología</option>
