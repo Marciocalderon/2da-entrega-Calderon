@@ -54,10 +54,17 @@ function listarTurnos() {
     let turnos = JSON.parse(localStorage.getItem('turnos')) || [];
     const listaTurnosDiv = document.getElementById("listaTurnos");
     listaTurnosDiv.innerHTML = "<h3>Turnos Médicos:</h3>";
-    
+
     if (turnos.length === 0) {
         listaTurnosDiv.innerHTML += "No hay turnos agendados.";
     } else {
+
+        turnos.sort((a, b) => {
+            const fechaHoraA = new Date(`${a.fecha}T${a.hora}`);
+            const fechaHoraB = new Date(`${b.fecha}T${b.hora}`);
+            return fechaHoraA - fechaHoraB; 
+        });
+
         turnos.forEach(turno => {
             listaTurnosDiv.innerHTML += `
                 <p>
@@ -89,9 +96,26 @@ function inicializar() {
         const hora = document.getElementById("hora").value;
         
         if (nombre && especialidad && fecha && hora) {
+            
+            const turnoFechaHora = new Date(`${fecha}T${hora}`);
+            const ahora = new Date();
+
+            if (turnoFechaHora < ahora) {
+                Swal.fire({
+                    title: "Cuidado",
+                    text: "No puedes agendar un turno anterior a la fecha actual",
+                    icon: "warning"
+                  });
+                return;
+            }
+
             crearTurno(nombre, especialidad, fecha, hora); 
         } else {
-            alert("Por favor, complete todos los datos.");
+            Swal.fire({
+                title: "Faltan",
+                text: "Por favor, complete todos los datos.",
+                icon: "warning"
+              });
         }
     });
     listarTurnos(); 
@@ -100,9 +124,6 @@ function inicializar() {
 function cambiarColor(color) {
     document.body.style.backgroundColor = color;
 }
+    cambiarColor("#DAF7A6")
 
-document.addEventListener("DOMContentLoaded", function() {
-    cambiarColor("#f9e79f")
-})
-
-document.addEventListener("DOMContentLoaded", inicializar);
+inicializar();
