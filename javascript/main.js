@@ -1,25 +1,8 @@
-function crearHTML() {
-    const body = document.body;
+ function crearHTML() {
+     const body = document.body;
 
     const formulario = document.createElement("form");
-    formulario.innerHTML = `
-        <h2>Gestión de Turnos Médicos</h2>
-        <label>Nombre del Paciente:</label><br>
-        <input type="text" id="nombre"><br><br>
-        <label>Especialidad Médica:</label><br>
-        <select id="especialidad">
-            <option value="">--Selecciona una especialidad--</option>
-            <option value="Cardiología">Cardiología</option>
-            <option value="Pediatría">Pediatría</option>
-            <option value="Dermatología">Dermatología</option>
-            <option value="Neurología">Neurología</option>
-        </select><br><br>
-        <label>Fecha del Turno:</label><br>
-        <input type="date" id="fecha"><br><br>
-        <label>Hora del Turno:</label><br>
-        <input type="time" id="hora"><br><br>
-        <button type="button" id="crearTurnoBtn">Crear Turno</button><br><br>
-    `;
+   formulario.innerHTML = ``;
 
     const listaTurnos = document.createElement("div");
     listaTurnos.id = "listaTurnos";
@@ -28,23 +11,30 @@ function crearHTML() {
     body.appendChild(listaTurnos);
 }
 
-function crearTurno(nombre, especialidad, fecha, hora) {
+function crearTurno(nombre, apellido, email, especialidad, fecha, hora) {
     let turnos = JSON.parse(localStorage.getItem('turnos')) || [];
     const nuevoTurno = {
         id: Date.now(),
         nombre: nombre,
+        email: email,
+        apellido: apellido,
         especialidad: especialidad,
         fecha: fecha,
         hora: hora
     };
     turnos.push(nuevoTurno);
     localStorage.setItem('turnos', JSON.stringify(turnos));
+    swal.fire({
+        title: "Turno creado correctamente",
+    });
     listarTurnos();
     limpiarFormulario();  
 }
 
 function limpiarFormulario() {
     document.getElementById("nombre").value = "";
+    document.getElementById("apellido").value = "";
+    document.getElementById("email").value = "";
     document.getElementById("especialidad").value = "";
     document.getElementById("fecha").value = "";
     document.getElementById("hora").value = "";
@@ -69,6 +59,8 @@ function listarTurnos() {
             listaTurnosDiv.innerHTML += `
                 <p>
                     <strong>Paciente:</strong> ${turno.nombre}<br>
+                    <strong>Apellido:</strong> ${turno.apellido}<br>
+                    <strong>Email:</strong> ${turno.email}<br>
                     <strong>Especialidad:</strong> ${turno.especialidad}<br>
                     <strong>Fecha:</strong> ${turno.fecha}<br>
                     <strong>Hora:</strong> ${turno.hora}<br>
@@ -81,22 +73,57 @@ function listarTurnos() {
 }
 
 function eliminarTurno(id) {
-    let turnos = JSON.parse(localStorage.getItem('turnos')) || [];
+    Swal.fire({
+        title: "¿Esta seguro de eliminar el turno",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#7acd65",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, Estoy seguro!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Eliminacion exitosa",
+            text: "Su turno fue eliminado.",
+            icon: "success"
+          }); 
+          let turnos = JSON.parse(localStorage.getItem('turnos')) || [];
     turnos = turnos.filter(turno => turno.id !== id);
     localStorage.setItem('turnos', JSON.stringify(turnos));
     listarTurnos();
+        }
+      });
 }
 
 function inicializar() {
     crearHTML(); 
     document.getElementById("crearTurnoBtn").addEventListener("click", function() {
-        const nombre = document.getElementById("nombre").value;
-        const especialidad = document.getElementById("especialidad").value;
+        const nombre = document.getElementById("nombre").value.trim();
+        const apellido = document.getElementById("apellido").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const especialidad = document.getElementById("especialidad").value.trim();
         const fecha = document.getElementById("fecha").value;
         const hora = document.getElementById("hora").value;
         
-        if (nombre && especialidad && fecha && hora) {
+        if (nombre && apellido && email && especialidad && fecha && hora) {
             
+            if (!validarEmail(email)) {
+                Swal.fire({
+                    title: "Email inválido",
+                    text: "Por favor, ingrese un email válido.",
+                    icon: "warning"
+                });
+                return;
+            }
+            if (!validarHora(hora)) {
+                Swal.fire({
+                    title: "Hora inválida",
+                    text: "Los turnos solo se pueden agendar entre las 8:00 y las 20:00.",
+                    icon: "warning"
+                });
+                return;
+            } 
+          
             const turnoFechaHora = new Date(`${fecha}T${hora}`);
             const ahora = new Date();
 
@@ -109,7 +136,7 @@ function inicializar() {
                 return;
             }
 
-            crearTurno(nombre, especialidad, fecha, hora); 
+            crearTurno(nombre, apellido,email, especialidad, fecha, hora); 
         } else {
             Swal.fire({
                 title: "Faltan",
@@ -121,9 +148,14 @@ function inicializar() {
     listarTurnos(); 
 }
 
-function cambiarColor(color) {
-    document.body.style.backgroundColor = color;
+function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
 }
-    cambiarColor("#DAF7A6")
+    function validarHora(hora) {
+        const [hours, minutes] = hora.split(":").map(Number);
+        return (hours >= 8 && hours < 20);
+    }
+  
 
 inicializar();
