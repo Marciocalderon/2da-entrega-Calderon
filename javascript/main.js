@@ -13,6 +13,16 @@
 
 function crearTurno(nombre, apellido, email, especialidad, fecha, hora) {
     let turnos = JSON.parse(localStorage.getItem('turnos')) || [];
+    const conflicto = turnos.some(turno => turno.fecha === fecha && turno.hora === hora && turno.especialidad === especialidad);
+
+    if (conflicto) {
+        Swal.fire({
+            title: "No es posible agendar este turno",
+            text: "Ya existe un turno agendado en esa fecha y hora para esa especialidad.",
+            icon: "error"
+        });
+        return;
+    }
     const nuevoTurno = {
         id: Date.now(),
         nombre: nombre,
@@ -157,5 +167,4 @@ function validarEmail(email) {
         return (hours >= 8 && hours < 20);
     }
   
-
 inicializar();
