@@ -1,4 +1,8 @@
 /* General body styling */
 body {
     background-color: #cc9696;
+    z-index: 12px;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
 }
