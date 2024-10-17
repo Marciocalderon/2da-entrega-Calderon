@@ -53,7 +53,7 @@ function limpiarFormulario() {
 function listarTurnos() {
     let turnos = JSON.parse(localStorage.getItem('turnos')) || [];
     const listaTurnosDiv = document.getElementById("listaTurnos");
-    listaTurnosDiv.innerHTML = "<h3>Turnos Médicos:</h3>";
+    listaTurnosDiv.innerHTML = "<h3>Turnos agendados:</h3>";
 
     if (turnos.length === 0) {
         listaTurnosDiv.innerHTML += "No hay turnos agendados.";
@@ -149,7 +149,7 @@ function inicializar() {
             crearTurno(nombre, apellido,email, especialidad, fecha, hora); 
         } else {
             Swal.fire({
-                title: "Faltan",
+                title: "Faltan datos",
                 text: "Por favor, complete todos los datos.",
                 icon: "warning"
               });
